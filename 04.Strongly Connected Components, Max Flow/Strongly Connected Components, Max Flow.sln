@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1. Strongly Connected Components (SCC)", "1. Strongly Connected Components (SCC)\1. Strongly Connected Components (SCC).csproj", "{D2B19CCF-A48F-477F-84B4-CCFFC635D731}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2. Max Flow algorithm - Edmonds-Karp", "2. Max Flow algorithm - Edmonds-Karp\2. Max Flow algorithm - Edmonds-Karp.csproj", "{56078C88-3329-420A-8151-FB796B29F33B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3. Articulation Points", "3. Articulation Points\3. Articulation Points.csproj", "{798245C6-2A17-4199-9222-573637CD1EA7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D2B19CCF-A48F-477F-84B4-CCFFC635D731}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2B19CCF-A48F-477F-84B4-CCFFC635D731}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2B19CCF-A48F-477F-84B4-CCFFC635D731}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2B19CCF-A48F-477F-84B4-CCFFC635D731}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56078C88-3329-420A-8151-FB796B29F33B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56078C88-3329-420A-8151-FB796B29F33B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56078C88-3329-420A-8151-FB796B29F33B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56078C88-3329-420A-8151-FB796B29F33B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{798245C6-2A17-4199-9222-573637CD1EA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{798245C6-2A17-4199-9222-573637CD1EA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{798245C6-2A17-4199-9222-573637CD1EA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{798245C6-2A17-4199-9222-573637CD1EA7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B93F7C0D-69CC-4693-BE6E-F226EC901400}
+	EndGlobalSection
+EndGlobal
