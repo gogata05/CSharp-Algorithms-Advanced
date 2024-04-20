@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1. Bellman-Ford", "1. Bellman-Ford\1. Bellman-Ford.csproj", "{ED4633E6-2CF5-48AF-817B-28E2C82A2C9A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2. Longest Path", "2. Longest Path\2. Longest Path.csproj", "{3D7D23E3-A794-4950-9CB7-5FF7B16D9ECD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ED4633E6-2CF5-48AF-817B-28E2C82A2C9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED4633E6-2CF5-48AF-817B-28E2C82A2C9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED4633E6-2CF5-48AF-817B-28E2C82A2C9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED4633E6-2CF5-48AF-817B-28E2C82A2C9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D7D23E3-A794-4950-9CB7-5FF7B16D9ECD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D7D23E3-A794-4950-9CB7-5FF7B16D9ECD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D7D23E3-A794-4950-9CB7-5FF7B16D9ECD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D7D23E3-A794-4950-9CB7-5FF7B16D9ECD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {120B0655-9453-4516-B634-D13F7C8AA6E4}
+	EndGlobalSection
+EndGlobal
