@@ -1,182 +1,99 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 namespace ConsoleApp1
 {
+    class Edge
+    {
+        public int From { get; set; }
+        public int To { get; set; }
+        public int Weight { get; set; }
+
+        public override string ToString()
+        {
+            return $"{From} {To}";
+        }
+    }
+   
     class Program
     {
-        // Клас, описващ връзката (Edge) между два тумора
-        public class Edge
-        {
-            public int From { get; set; }    // Начален тумор
-            public int To { get; set; }      // Краен тумор
-            public int Length { get; set; }  // Дължина на връзката
-
-            public Edge(int from, int to, int length)
-            {
-                From = from;
-                To = to;
-                Length = length;
-            }
-        }
-
-        // Клас Union-Find (Disjoint Set) за обединяване на компоненти и избягване на цикли
-        public class UnionFind
-        {
-            private int[] parent;  // Родител на всеки елемент
-            private int[] rank;    // Ранг, използван за оптимизация на обединяването
-
-            public UnionFind(int size)
-            {
-                parent = new int[size];
-                rank = new int[size];
-                // Инициализация: всеки елемент е сам себе си родител
-                for (int i = 0; i < size; i++)
-                {
-                    parent[i] = i;
-                    rank[i] = 1;
-                }
-            }
-
-            // Метод за намиране на кореновия родител (с оптимизация чрез path compression)
-            public int Find(int x)
-            {
-                if (parent[x] != x)
-                {
-                    parent[x] = Find(parent[x]);
-                }
-                return parent[x];
-            }
-
-            // Обединяване на два елемента, ако принадлежат на различни компоненти
-            public bool Union(int x, int y)
-            {
-                int rootX = Find(x);
-                int rootY = Find(y);
-
-                if (rootX == rootY)
-                {
-                    // Вече са свързани
-                    return false;
-                }
-
-                // Обединяване по ранг за оптимизация
-                if (rank[rootX] > rank[rootY])
-                {
-                    parent[rootY] = rootX;
-                }
-                else if (rank[rootX] < rank[rootY])
-                {
-                    parent[rootX] = rootY;
-                }
-                else
-                {
-                    parent[rootY] = rootX;
-                    rank[rootX]++;
-                }
-                return true;
-            }
-        }
-
         static void Main(string[] args)
         {
-            // Четене на броя на туморите
-            int n;
-            string input = Console.ReadLine();
-            if (!int.TryParse(input, out n) || n < 0)
+            var nodes = int.Parse(Console.ReadLine());
+            var edges = int.Parse(Console.ReadLine());
+
+            var graph = new Dictionary<int, Dictionary<int, int>>();
+
+            for (int node = 0; node < nodes +1; node++)
             {
-                Console.Error.WriteLine("Невалиден брой тумори.");
-                Console.WriteLine("0");
-                return;
+                graph.Add(node, new Dictionary<int, int>());
             }
 
-            // Четене на броя на връзките (edges)
-            int m;
-            input = Console.ReadLine();
-            if (!int.TryParse(input, out m) || m < 0)
+            for (int i = 0; i < edges; i++)
             {
-                Console.Error.WriteLine("Невалиден брой връзки.");
-                Console.WriteLine("0");
-                return;
+                var edgeData = Console.ReadLine().Split().Select(int.Parse).ToArray();
+
+                var fromNode = edgeData[0];
+                var toNode = edgeData[1];
+                var weight = edgeData[2];
+
+                graph[fromNode][toNode] = weight;
             }
 
-            // Ако няма достатъчен брой тумори или връзки, извеждаме 0
-            if (n <= 1 || m == 0)
-            {
-                Console.WriteLine("0");
-                return;
-            }
+            var sortedEdges = new List<Edge>();
 
-            // Списък за съхранение на всички ръбове
-            List<Edge> edges = new List<Edge>();
-            int maxIndexFound = n - 1;
-
-            // Четене и валидиране на всеки ръб от входа
-            for (int i = 0; i < m; i++)
+            foreach (var node in graph)
             {
-                string line = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(line))
+                foreach (var child in node.Value)
                 {
-                    Console.Error.WriteLine($"Празен ред на входа на ред {i + 1}, пропускаме.");
+                    var edge = new Edge
+                    {
+                        From = node.Key,
+                        To = child.Key,
+                        Weight = child.Value
+                    };
+                    sortedEdges.Add(edge);
+                }
+            }
+            sortedEdges = sortedEdges.OrderBy(e => e.Weight).ToList();
+            var mst = new List<Edge>();
+
+            var parent = new int[nodes +1];
+            for (int node = 0; node < parent.Length; node++)
+            {
+                parent[node] = node;
+            }
+
+            foreach (var edge in sortedEdges)
+            {
+                var firstNodeRoot = FindRoot(parent, edge.From);
+                var secondNodeRoot = FindRoot(parent, edge.To);
+                if (firstNodeRoot == secondNodeRoot)
+                {
                     continue;
                 }
-
-                // Разделяне на входния ред по интервали и табулации
-                string[] parts = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length != 3)
-                {
-                    Console.Error.WriteLine($"Невалиден формат на ред {i + 1}: {line}");
-                    continue;
-                }
-
-                int from, to, length;
-                if (!int.TryParse(parts[0], out from) ||
-                    !int.TryParse(parts[1], out to) ||
-                    !int.TryParse(parts[2], out length) ||
-                    from < 0 || to < 0 || length < 0)
-                {
-                    Console.Error.WriteLine($"Невалидни данни на ред {i + 1}: {line}");
-                    continue;
-                }
-
-                // Актуализиране на максималния намерен индекс, за да избегнем излизане извън обхвата
-                if (from > maxIndexFound) maxIndexFound = from;
-                if (to > maxIndexFound) maxIndexFound = to;
-
-                // Добавяне на ръба в списъка
-                edges.Add(new Edge(from, to, length));
+                parent[firstNodeRoot] = secondNodeRoot;
+                mst.Add(edge);
             }
 
-            // Коригиране на общия брой елементи, ако са подадени индекси по-големи от първоначално зададените
-            int actualN = Math.Max(n, maxIndexFound + 1);
-
-            // Сортиране на ръбовете по дължина във възходящ ред
-            edges = edges.OrderBy(e => e.Length).ToList();
-
-            // Инициализиране на Union-Find структурата
-            UnionFind uf = new UnionFind(actualN);
-            List<Edge> selectedEdges = new List<Edge>();
-            long totalLengthUsed = 0;
-
-            // Избор на ръбовете, които формират минимално покриващо дърво (MST) без цикли
-            foreach (var edge in edges)
+            var sum = 0;
+            foreach (var edge in mst)
             {
-                if (uf.Union(edge.From, edge.To))
-                {
-                    selectedEdges.Add(edge);
-                    totalLengthUsed += edge.Length;
-                }
+                Console.WriteLine(edge);
+                sum += edge.Weight;
             }
 
-            // Извеждане на избраните ръбове във формата "от кой до кой"
-            foreach (var edge in selectedEdges)
-            {
-                Console.WriteLine($"{edge.From} {edge.To}");
-            }
+            Console.WriteLine(sum);
+        }
 
-            // Извеждане на тоталната дължина на избраните ръбове
-            Console.WriteLine(totalLengthUsed);
+
+        private static int FindRoot(int[] parent, int node)
+        {
+           while (node != parent[node])
+           {
+            node = parent[node];
+           }
+           return node;
         }
     }
 }

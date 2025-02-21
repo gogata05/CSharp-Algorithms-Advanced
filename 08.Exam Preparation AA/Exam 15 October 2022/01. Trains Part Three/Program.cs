@@ -1,106 +1,121 @@
 using System;
 using System.Collections.Generic;
-
-public class Program
+namespace ConsoleApp1
 {
-    public class Edge
+    class Program
     {
-        public int To { get; set; }
-        public int Capacity { get; set; }
-        public Edge Reverse { get; set; }
-
-        // Добавяме конструктор за по-бърза инициализация
-        public Edge(int to, int capacity)
+        static void Main(string[] args)
         {
-            To = to;
-            Capacity = capacity;
+            int n = int.Parse(Console.ReadLine());
+            int m = int.Parse(Console.ReadLine());
+            string[] parts = Console.ReadLine().Split();
+            int source = int.Parse(parts[0]);
+            int sink = int.Parse(parts[1]);
+            MaxFlow flowSolver = new MaxFlow(n);
+            for (int i = 0; i < m; i++)
+            {
+                string[] input = Console.ReadLine().Split();
+                int u = int.Parse(input[0]);
+                int v = int.Parse(input[1]);
+                int capacity = int.Parse(input[2]);
+                flowSolver.AddEdge(u, v, capacity);
+            }
+            Console.WriteLine(flowSolver.GetMaxFlow(source, sink));
         }
     }
-
-    public static void Main()
+    public class MaxFlow
     {
-        // Read input values
-        int n = int.Parse(Console.ReadLine());
-        int m = int.Parse(Console.ReadLine());
-        int[] sourceSink = Array.ConvertAll(Console.ReadLine().Split(), int.Parse);
-        int source = sourceSink[0];
-        int sink = sourceSink[1];
-
-        // Initialize adjacency list for graph
-        List<Edge>[] graph = new List<Edge>[n];
-        for (int i = 0; i < n; i++)
-            graph[i] = new List<Edge>();
-
-        // Build residual graph
-        for (int i = 0; i < m; i++)
+        int n;
+        List<Edge>[] adj;
+        int[] level;
+        int[] ptr;
+        public MaxFlow(int n)
         {
-            int[] tube = Array.ConvertAll(Console.ReadLine().Split(), int.Parse);
-            int from = tube[0];
-            int to = tube[1];
-            int capacity = tube[2];
-
-            Edge forward = new Edge(to, capacity);
-            Edge reverse = new Edge(from, 0);
-            forward.Reverse = reverse;
-            reverse.Reverse = forward;
-            
-            graph[from].Add(forward);
-            graph[to].Add(reverse);
+            this.n = n;
+            adj = new List<Edge>[n];
+            for (int i = 0; i < n; i++)
+                adj[i] = new List<Edge>();
+            level = new int[n];
+            ptr = new int[n];
         }
-
-        // Добавяме проверка за изолирани върхове
-        if (source < 0 || source >= n || sink < 0 || sink >= n)
+        public void AddEdge(int u, int v, int cap)
         {
-            Console.WriteLine("Invalid source or sink node");
-            return;
+            adj[u].Add(new Edge(v, cap, adj[v].Count));
+            adj[v].Add(new Edge(u, 0, adj[u].Count - 1));
         }
-
-        int maxFlow = 0;
-        
-        // Edmonds-Karp algorithm implementation
-        while (true)
+        bool Bfs(int s, int t)
         {
-            int[] parent = new int[n];
-            for (int i = 0; i < n; i++) parent[i] = -1;
-            Edge[] pathEdges = new Edge[n];
-            Queue<int> queue = new Queue<int>();
-            queue.Enqueue(source);
-            parent[source] = source;
-
-            // BFS to find augmenting path
-            while (queue.Count > 0 && parent[sink] == -1)
+            for (int i = 0; i < level.Length; i++)
+                level[i] = -1;
+            level[s] = 0;
+            Queue<int> q = new Queue<int>();
+            q.Enqueue(s);
+            while (q.Count > 0)
             {
-                int u = queue.Dequeue();
-                foreach (Edge e in graph[u])
+                int u = q.Dequeue();
+                foreach (Edge e in adj[u])
                 {
-                    if (parent[e.To] == -1 && e.Capacity > 0)
+                    if (level[e.to] < 0 && e.flow < e.cap)
                     {
-                        parent[e.To] = u;
-                        pathEdges[e.To] = e;
-                        queue.Enqueue(e.To);
+                        level[e.to] = level[u] + 1;
+                        q.Enqueue(e.to);
                     }
                 }
             }
-
-            // No more augmenting paths found
-            if (parent[sink] == -1) break;
-
-            // Find minimum residual capacity
-            int minFlow = int.MaxValue;
-            for (int v = sink; v != source; v = parent[v])
-                minFlow = Math.Min(minFlow, pathEdges[v].Capacity);
-
-            // Update residual capacities
-            for (int v = sink; v != source; v = parent[v])
-            {
-                Edge edge = pathEdges[v];
-                edge.Capacity -= minFlow;
-                edge.Reverse.Capacity += minFlow;
-            }
-
-            maxFlow += minFlow;
+            return level[t] >= 0;
         }
-
-        Console.WriteLine(maxFlow);
+        int Dfs(int u, int t, int pushed)
+        {
+            if (pushed == 0)
+                return 0;
+            if (u == t)
+                return pushed;
+            for (; ptr[u] < adj[u].Count; ptr[u]++)
+            {
+                Edge e = adj[u][ptr[u]];
+                if (level[e.to] != level[u] + 1 || e.flow >= e.cap)
+                    continue;
+                int tr = Dfs(e.to, t, Math.Min(pushed, e.cap - e.flow));
+                if (tr > 0)
+                {
+                    e.flow += tr;
+                    adj[e.to][e.rev].flow -= tr;
+                    return tr;
+                }
+            }
+            return 0;
+        }
+        public int GetMaxFlow(int s, int t)
+        {
+            if (s == t) return 0;
+            int flow = 0;
+            while (Bfs(s, t))
+            {
+                for (int i = 0; i < ptr.Length; i++)
+                    ptr[i] = 0;
+                while (true)
+                {
+                    int pushed = Dfs(s, t, int.MaxValue);
+                    if (pushed == 0)
+                        break;
+                    flow += pushed;
+                }
+            }
+            return flow;
+        }
+    }
+    public class Edge
+    {
+        public int to;
+        public int cap;
+        public int flow;
+        public int rev;
+        public Edge(int to, int cap, int rev)
+        {
+            this.to = to;
+            this.cap = cap;
+            this.rev = rev;
+            flow = 0;
+        }
     }
 }
